@@ -222,6 +222,7 @@ const Timeline = (): JSX.Element => {
 const App = (): JSX.Element => {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [currentPage, setCurrentPage] = useState<'home' | 'auth'>('home');
+    const [language, setLanguage] = useState('EN');
 
     const navLinks = [
         { label: 'Home', href: '#', action: () => setCurrentPage('home') },
@@ -230,21 +231,19 @@ const App = (): JSX.Element => {
         { label: 'Contact', href: '#', action: () => { setCurrentPage('auth'); setMobileMenuOpen(false); } },
     ];
 
+    const languages = [
+        { code: 'EN', label: 'English' },
+        { code: 'ZH', label: '中文' },
+        { code: 'ES', label: 'Español' },
+    ];
+
     return (
         <div className="flex flex-col min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 text-white">
             {/* Navigation Bar */}
             <nav className="sticky top-0 z-50 h-[5%] bg-slate-950 border-b border-slate-700 shadow-lg flex items-center px-4 md:px-6">
                 <div className="flex items-center justify-between w-full max-w-7xl mx-auto">
-                    {/* Logo & Title */}
-                    <button onClick={() => setCurrentPage('home')} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-                        <div className="w-8 h-8">
-                            <AppLogo />
-                        </div>
-                        <span className="text-lg font-bold hidden sm:inline">Test App</span>
-                    </button>
-
-                    {/* Desktop Navigation */}
-                    <div className="hidden md:flex gap-6">
+                    {/* Left Navigation Buttons */}
+                    <div className="flex gap-6">
                         {navLinks.map((link) => (
                             <button
                                 key={link.label}
@@ -252,6 +251,23 @@ const App = (): JSX.Element => {
                                 className="hover:text-blue-400 transition-colors"
                             >
                                 {link.label}
+                            </button>
+                        ))}
+                    </div>
+
+                    {/* Right Language Buttons - Desktop */}
+                    <div className="hidden md:flex gap-3">
+                        {languages.map((lang) => (
+                            <button
+                                key={lang.code}
+                                onClick={() => setLanguage(lang.code)}
+                                className={`px-3 py-1 rounded transition-colors ${
+                                    language === lang.code
+                                        ? 'bg-blue-500 text-white'
+                                        : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                                }`}
+                            >
+                                {lang.label}
                             </button>
                         ))}
                     </div>
@@ -293,6 +309,24 @@ const App = (): JSX.Element => {
                                     {link.label}
                                 </button>
                             ))}
+                            <div className="border-t border-slate-700 pt-4 flex gap-2">
+                                {languages.map((lang) => (
+                                    <button
+                                        key={lang.code}
+                                        onClick={() => {
+                                            setLanguage(lang.code);
+                                            setMobileMenuOpen(false);
+                                        }}
+                                        className={`px-3 py-1 rounded text-sm transition-colors ${
+                                            language === lang.code
+                                                ? 'bg-blue-500 text-white'
+                                                : 'bg-slate-800 text-slate-300'
+                                        }`}
+                                    >
+                                        {lang.label}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
                     </div>
                 )}
