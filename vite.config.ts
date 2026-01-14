@@ -18,7 +18,9 @@ export default defineConfig({
     },
     plugins: [
         laravel({
-            input: ['resources/css/app.css', 'resources/js/app.tsx'],
+            input: process.env.GHPAGES === 'true' 
+                ? ['resources/css/app.css', 'resources/js/app-static.tsx']
+                : ['resources/css/app.css', 'resources/js/app.tsx'],
             ssr: 'resources/js/ssr.tsx',
             refresh: true,
         }),
@@ -45,8 +47,12 @@ export default defineConfig({
                     if (fs.existsSync(manifestPath)) {
                         const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
                         
-                        // Find the entry point
-                        const entryPoint = manifest['resources/js/app.tsx'];
+                        // Find the entry point based on build mode
+                        const entryKey = process.env.GHPAGES === 'true' 
+                            ? 'resources/js/app-static.tsx'
+                            : 'resources/js/app.tsx';
+                        const entryPoint = manifest[entryKey];
+                        
                         if (entryPoint) {
                             const jsFile = `${basePath}/${entryPoint.file}`;
                             const cssFiles = entryPoint.css
