@@ -117,7 +117,7 @@ const App = (): JSX.Element => {
     return (
         <div className="flex flex-col min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 text-white">
             {/* Navigation Bar */}
-            <nav className="h-[5%] bg-slate-950 border-b border-slate-700 shadow-lg flex items-center px-4 md:px-6">
+            <nav className="sticky top-0 z-50 h-[5%] bg-slate-950 border-b border-slate-700 shadow-lg flex items-center px-4 md:px-6">
                 <div className="flex items-center justify-between w-full max-w-7xl mx-auto">
                     {/* Logo & Title */}
                     <div className="flex items-center gap-2">
@@ -166,7 +166,7 @@ const App = (): JSX.Element => {
 
                 {/* Mobile Menu */}
                 {mobileMenuOpen && (
-                    <div className="absolute top-[5%] left-0 right-0 bg-slate-950 border-b border-slate-700 md:hidden">
+                    <div className="absolute top-[100%] left-0 right-0 bg-slate-950 border-b border-slate-700 md:hidden">
                         <div className="flex flex-col gap-4 p-4">
                             {navLinks.map((link) => (
                                 <a
