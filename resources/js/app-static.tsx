@@ -1,4 +1,5 @@
 import '../css/app.css';
+import 'bootstrap/dist/js/bootstrap.bundle.js';
 import { StrictMode, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import Heading from './components/heading';
