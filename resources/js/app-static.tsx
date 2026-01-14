@@ -360,6 +360,7 @@ const App = (): JSX.Element => {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [currentPage, setCurrentPage] = useState<'home' | 'auth'>('home');
     const [language, setLanguage] = useState('EN');
+    const [activePart, setActivePart] = useState(1);
     
     const t = translations[language] || translations.EN;
 
@@ -493,6 +494,23 @@ const App = (): JSX.Element => {
                                 </p>
                             </div>
                         </div>
+                    </div>
+
+                    {/* Part Selection Buttons */}
+                    <div className="flex justify-center gap-4 my-12 px-4">
+                        {[1, 2, 3].map((part) => (
+                            <button
+                                key={part}
+                                onClick={() => setActivePart(part)}
+                                className={`px-6 py-2 rounded-lg font-semibold transition-colors ${
+                                    activePart === part
+                                        ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/50'
+                                        : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700'
+                                }`}
+                            >
+                                Part {part}
+                            </button>
+                        ))}
                     </div>
 
                     {/* Timeline Section */}
