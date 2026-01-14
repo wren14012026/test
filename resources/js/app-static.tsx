@@ -38,6 +38,121 @@ const timelineData = [
     },
 ];
 
+// Login/Register Component
+const AuthPage = ({ onBack }: { onBack: () => void }): JSX.Element => {
+    const [isLogin, setIsLogin] = useState(true);
+    const [formData, setFormData] = useState({
+        email: '',
+        password: '',
+        confirmPassword: '',
+        name: '',
+    });
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        alert(`${isLogin ? 'Login' : 'Register'} submitted (Demo only)`);
+    };
+
+    return (
+        <div className="flex-1 flex items-center justify-center px-4 py-12">
+            <div className="w-full max-w-md">
+                <div className="bg-slate-800 p-8 rounded-lg border border-slate-700 shadow-xl">
+                    <h2 className="text-3xl font-bold text-center mb-8">
+                        {isLogin ? 'Login' : 'Register'}
+                    </h2>
+
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        {!isLogin && (
+                            <div>
+                                <label className="block text-sm font-medium mb-2">Full Name</label>
+                                <input
+                                    type="text"
+                                    name="name"
+                                    value={formData.name}
+                                    onChange={handleInputChange}
+                                    placeholder="John Doe"
+                                    className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-blue-400 transition-colors"
+                                    required={!isLogin}
+                                />
+                            </div>
+                        )}
+
+                        <div>
+                            <label className="block text-sm font-medium mb-2">Email</label>
+                            <input
+                                type="email"
+                                name="email"
+                                value={formData.email}
+                                onChange={handleInputChange}
+                                placeholder="you@example.com"
+                                className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-blue-400 transition-colors"
+                                required
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium mb-2">Password</label>
+                            <input
+                                type="password"
+                                name="password"
+                                value={formData.password}
+                                onChange={handleInputChange}
+                                placeholder="••••••••"
+                                className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-blue-400 transition-colors"
+                                required
+                            />
+                        </div>
+
+                        {!isLogin && (
+                            <div>
+                                <label className="block text-sm font-medium mb-2">Confirm Password</label>
+                                <input
+                                    type="password"
+                                    name="confirmPassword"
+                                    value={formData.confirmPassword}
+                                    onChange={handleInputChange}
+                                    placeholder="••••••••"
+                                    className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-blue-400 transition-colors"
+                                    required={!isLogin}
+                                />
+                            </div>
+                        )}
+
+                        <button
+                            type="submit"
+                            className="w-full py-2 bg-blue-500 hover:bg-blue-600 font-semibold rounded-lg transition-colors mt-6"
+                        >
+                            {isLogin ? 'Login' : 'Register'}
+                        </button>
+                    </form>
+
+                    <div className="mt-6 text-center text-slate-300">
+                        {isLogin ? "Don't have an account?" : 'Already have an account?'}
+                        <button
+                            onClick={() => setIsLogin(!isLogin)}
+                            className="ml-2 text-blue-400 hover:text-blue-300 font-semibold transition-colors"
+                        >
+                            {isLogin ? 'Register' : 'Login'}
+                        </button>
+                    </div>
+
+                    <button
+                        onClick={onBack}
+                        className="w-full mt-6 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg transition-colors"
+                    >
+                        Back to Home
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 // Timeline Component
 const Timeline = (): JSX.Element => {
     return (
@@ -106,12 +221,13 @@ const Timeline = (): JSX.Element => {
 // Simple static app for GitHub Pages (no Inertia/backend required)
 const App = (): JSX.Element => {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [currentPage, setCurrentPage] = useState<'home' | 'auth'>('home');
 
     const navLinks = [
-        { label: 'Home', href: '#' },
+        { label: 'Home', href: '#', action: () => setCurrentPage('home') },
         { label: 'About', href: '#' },
         { label: 'Features', href: '#' },
-        { label: 'Contact', href: '#' },
+        { label: 'Contact', href: '#', action: () => { setCurrentPage('auth'); setMobileMenuOpen(false); } },
     ];
 
     return (
@@ -120,23 +236,23 @@ const App = (): JSX.Element => {
             <nav className="sticky top-0 z-50 h-[5%] bg-slate-950 border-b border-slate-700 shadow-lg flex items-center px-4 md:px-6">
                 <div className="flex items-center justify-between w-full max-w-7xl mx-auto">
                     {/* Logo & Title */}
-                    <div className="flex items-center gap-2">
+                    <button onClick={() => setCurrentPage('home')} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
                         <div className="w-8 h-8">
                             <AppLogo />
                         </div>
                         <span className="text-lg font-bold hidden sm:inline">Test App</span>
-                    </div>
+                    </button>
 
                     {/* Desktop Navigation */}
                     <div className="hidden md:flex gap-6">
                         {navLinks.map((link) => (
-                            <a
+                            <button
                                 key={link.label}
-                                href={link.href}
+                                onClick={link.action}
                                 className="hover:text-blue-400 transition-colors"
                             >
                                 {link.label}
-                            </a>
+                            </button>
                         ))}
                     </div>
 
@@ -169,46 +285,49 @@ const App = (): JSX.Element => {
                     <div className="absolute top-[100%] left-0 right-0 bg-slate-950 border-b border-slate-700 md:hidden">
                         <div className="flex flex-col gap-4 p-4">
                             {navLinks.map((link) => (
-                                <a
+                                <button
                                     key={link.label}
-                                    href={link.href}
-                                    className="hover:text-blue-400 transition-colors py-2"
-                                    onClick={() => setMobileMenuOpen(false)}
+                                    onClick={link.action}
+                                    className="hover:text-blue-400 transition-colors py-2 text-left"
                                 >
                                     {link.label}
-                                </a>
+                                </button>
                             ))}
                         </div>
                     </div>
                 )}
             </nav>
 
-            {/* Main Content */}
-            <div className="flex-1 flex flex-col">
-                {/* Hero Section */}
-                <div className="flex flex-col items-center justify-center px-4 py-20">
-                    <div className="text-center">
-                        <div className="mb-8 flex justify-center">
-                            <AppLogo />
-                        </div>
-                        <Heading>Welcome to Test</Heading>
-                        <p className="text-lg md:text-xl text-slate-300 mt-4 mb-8">
-                            This is a static version deployed to GitHub Pages
-                        </p>
-                        <div className="space-y-4">
-                            <p className="text-slate-400">
-                                Built with React, TypeScript, and Tailwind CSS
+            {/* Page Content */}
+            {currentPage === 'home' ? (
+                <>
+                    {/* Hero Section */}
+                    <div className="flex flex-col items-center justify-center px-4 py-20">
+                        <div className="text-center">
+                            <div className="mb-8 flex justify-center">
+                                <AppLogo />
+                            </div>
+                            <Heading>Welcome to Test</Heading>
+                            <p className="text-lg md:text-xl text-slate-300 mt-4 mb-8">
+                                This is a static version deployed to GitHub Pages
                             </p>
-                            <p className="text-sm text-slate-500">
-                                (Full-stack features require a Laravel backend)
-                            </p>
+                            <div className="space-y-4">
+                                <p className="text-slate-400">
+                                    Built with React, TypeScript, and Tailwind CSS
+                                </p>
+                                <p className="text-sm text-slate-500">
+                                    (Full-stack features require a Laravel backend)
+                                </p>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                {/* Timeline Section */}
-                <Timeline />
-            </div>
+                    {/* Timeline Section */}
+                    <Timeline />
+                </>
+            ) : (
+                <AuthPage onBack={() => setCurrentPage('home')} />
+            )}
         </div>
     );
 };
