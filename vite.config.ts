@@ -5,6 +5,12 @@ import laravel from 'laravel-vite-plugin';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
+    // When building for GitHub Pages set GHPAGES=true so Vite outputs files to `docs/`
+    // and uses the correct base path for the repository (repo: test).
+    base: process.env.GHPAGES === 'true' ? '/test/' : '/',
+    build: {
+        outDir: process.env.GHPAGES === 'true' ? 'docs' : 'dist',
+    },
     plugins: [
         laravel({
             input: ['resources/css/app.css', 'resources/js/app.tsx'],
