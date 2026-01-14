@@ -242,8 +242,8 @@ const App = (): JSX.Element => {
             {/* Navigation Bar */}
             <nav className="sticky top-0 z-50 h-[5%] bg-slate-950 border-b border-slate-700 shadow-lg flex items-center px-4 md:px-6">
                 <div className="flex items-center justify-between w-full max-w-7xl mx-auto">
-                    {/* Left Navigation Buttons */}
-                    <div className="flex gap-6">
+                    {/* Left Navigation Buttons - Desktop only */}
+                    <div className="hidden md:flex gap-6">
                         {navLinks.map((link) => (
                             <button
                                 key={link.label}
