@@ -31,29 +31,61 @@ export default defineConfig({
         wayfinder({
             formVariants: true,
         }),
-        // Plugin to copy index.html and 404.html to output directory for GitHub Pages
+        // Plugin to generate index.html and 404.html dynamically using the manifest
         {
-            name: 'copy-html-files',
+            name: 'generate-html-files',
             apply: 'build',
             enforce: 'post',
             writeBundle() {
                 const outDir = process.env.GHPAGES === 'true' ? 'docs' : 'dist';
-                const srcIndex = path.resolve(__dirname, 'index.html');
-                const src404 = path.resolve(__dirname, '404.html');
-                const destIndex = path.resolve(__dirname, outDir, 'index.html');
-                const dest404 = path.resolve(__dirname, outDir, '404.html');
+                const basePath = process.env.GHPAGES === 'true' ? '/test' : '';
+                const manifestPath = path.resolve(__dirname, outDir, 'manifest.json');
 
                 try {
-                    if (fs.existsSync(srcIndex)) {
-                        fs.copyFileSync(srcIndex, destIndex);
-                        console.log(`✓ Copied index.html to ${outDir}/`);
-                    }
-                    if (fs.existsSync(src404)) {
-                        fs.copyFileSync(src404, dest404);
-                        console.log(`✓ Copied 404.html to ${outDir}/`);
+                    if (fs.existsSync(manifestPath)) {
+                        const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
+                        
+                        // Find the entry point
+                        const entryPoint = manifest['resources/js/app.tsx'];
+                        if (entryPoint) {
+                            const jsFile = `${basePath}/${entryPoint.file}`;
+                            const cssFiles = entryPoint.css
+                                ?.map(css => `    <link rel="stylesheet" href="${basePath}/${css}" />`)
+                                .join('\n') || '';
+                            
+                            const htmlTemplate = `<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>test (GitHub Pages)</title>
+${cssFiles}
+</head>
+<body>
+  <div id="app"></div>
+  <script type="module" src="${jsFile}"></script>
+</body>
+</html>`;
+
+                            const indexPath = path.resolve(__dirname, outDir, 'index.html');
+                            const notFoundPath = path.resolve(__dirname, outDir, '404.html');
+                            
+                            fs.writeFileSync(indexPath, htmlTemplate);
+                            
+                            const notFoundTemplate = htmlTemplate.replace(
+                                '<title>test (GitHub Pages)</title>',
+                                '<title>test (GitHub Pages) - 404</title>'
+                            ).replace(
+                                '<div id="app"></div>',
+                                '<div id="app"></div>\n  <!-- GitHub Pages serves this file on unknown routes; loading the SPA here lets the client router handle navigation -->'
+                            );
+                            
+                            fs.writeFileSync(notFoundPath, notFoundTemplate);
+                            console.log(`✓ Generated index.html and 404.html from manifest`);
+                        }
                     }
                 } catch (err) {
-                    console.error('Failed to copy HTML files:', err.message);
+                    console.error('Failed to generate HTML files:', err.message);
                 }
             },
         },
